@@ -1,0 +1,30 @@
+snapshots:
+  - name: snp_customers
+    description: "SCD Type 2 snapshot of customer data tracking historical changes."
+    # The relation key replaces the need for a SELECT statement in a SQL file
+    relation: ref('stg_customers') 
+    config:
+      target_schema: silver
+      unique_key: customer_id
+      strategy: check
+      check_cols: 
+        - first_name
+        - last_name
+        - email
+        - address
+        - country
+        - loyalty_tier
+ 
+
+  - name: snp_products
+    description: "SCD Type 2 snapshot of product data tracking price and category changes."
+    relation: ref('stg_products')
+    config:
+      target_schema: silver
+      unique_key: product_id
+      strategy: check
+      check_cols: 
+        - product_name
+        - category
+        - unit_price
+        - supplier_id

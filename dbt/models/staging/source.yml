@@ -1,0 +1,13 @@
+version: 2
+
+sources:
+  - name: bronze
+    database: dbt_retail_dev # Or your specific Unity Catalog name
+    schema: bronze
+    tables:
+      - name: customers
+      - name: products
+      - name: inventory
+      - name: sales
+
+

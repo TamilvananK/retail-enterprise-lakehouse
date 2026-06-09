@@ -1,0 +1,12 @@
+# dbt
+dbt/target/
+dbt/logs/
+dbt/dbt_packages/
+
+# Airflow
+airflow/logs/
+
+# Secrets
+.env
+*.pem
+.databrickscfg
