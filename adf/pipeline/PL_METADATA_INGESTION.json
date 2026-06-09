@@ -1,0 +1,105 @@
+{
+	"name": "PL_METADATA_INGESTION",
+	"properties": {
+		"description": "@item().dataset_name\nsource_format\t@item().source_format\nsource_path\t@item().source_path\ntarget_path\t@item().target_path\nload_type\t@item().load_type",
+		"activities": [
+			{
+				"name": "Get_Metadata",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "JsonSource",
+						"storeSettings": {
+							"type": "AzureBlobFSReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "JsonReadSettings"
+						}
+					},
+					"dataset": {
+						"referenceName": "DS_METADATA_JSON",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "Iterate_Over_Datasets",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Get_Metadata",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Get_Metadata').output.value",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "ADF Notebook Activity",
+							"type": "DatabricksNotebook",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"notebookPath": "/Users/tamilvanankannappan1@gmail.com/adf-data-copy",
+								"baseParameters": {
+									"dataset_name": {
+										"value": "@item().dataset_name",
+										"type": "Expression"
+									},
+									"source_format": {
+										"value": "@item().source_format",
+										"type": "Expression"
+									},
+									"source_path": {
+										"value": "@item().source_path",
+										"type": "Expression"
+									},
+									"target_path": {
+										"value": "@item().target_path",
+										"type": "Expression"
+									},
+									"load_type": {
+										"value": "@item().load_type",
+										"type": "Expression"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "LS_DATABRICKS",
+								"type": "LinkedServiceReference"
+							}
+						}
+					]
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2026-06-01T12:35:55Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}
