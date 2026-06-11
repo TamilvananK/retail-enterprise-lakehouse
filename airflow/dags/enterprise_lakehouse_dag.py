@@ -1,7 +1,7 @@
 from airflow import DAG
 from airflow.providers.microsoft.azure.operators.data_factory import AzureDataFactoryRunPipelineOperator
 from airflow.providers.databricks.operators.databricks import DatabricksRunNowOperator
-from airflow.providers.snowflake.operators.snowflake import SnowflakeOperator
+from airflow.providers.common.sql.operators.sql import SQLExecuteQueryOperator
 from datetime import datetime, timedelta
 
 # 1. Define Default Arguments for Fault Tolerance
@@ -30,12 +30,12 @@ with DAG(
     # ---------------------------------------------------------
     # wait_for_termination=True ensures Airflow doesn't trigger Databricks until the data has actually landed.
     ingest_to_bronze = AzureDataFactoryRunPipelineOperator(
-        task_id='trigger_adf_ingestion',
-        azure_data_factory_conn_id='azure_data_factory_default',
-        pipeline_name='Master_Ingestion_Pipeline',
-        resource_group_name='rg-retail-data-platform',
-        factory_name='adf-retail-enterprise',
-        wait_for_termination=True 
+    task_id='trigger_adf_ingestion',
+    azure_data_factory_conn_id='azure_data_factory_default',
+    pipeline_name='PL_METADATA_INGESTION',
+    resource_group_name='Retail_org_RG',
+    factory_name='adf-Retail-pro',
+    wait_for_termination=True
     )
 
     # ---------------------------------------------------------
@@ -62,33 +62,32 @@ with DAG(
     # TASK 4: Load Curated Data into Snowflake Serving Layer
     # ---------------------------------------------------------
     # Triggers a stored procedure or COPY INTO command in Snowflake
-    load_snowflake_serving = SnowflakeOperator(
-        task_id='load_gold_to_snowflake',
-        snowflake_conn_id='snowflake_default',
-        sql="""
-            USE WAREHOUSE retail_loading_wh;
-            CALL retail_enterprise_db.public.sp_load_gold_tables();
-        """
-    )
+    load_snowflake_serving = SQLExecuteQueryOperator(
+    task_id='load_gold_to_snowflake',
+    conn_id='snowflake_default',
+    sql="""
+        USE WAREHOUSE retail_loading_wh;
+        CALL retail_enterprise_db.public.sp_load_gold_tables();
+    """
+)
 
     # ---------------------------------------------------------
     # TASK 5: Final Data Quality Gate
     # ---------------------------------------------------------
     # Ensures no nulls or duplicates made it into the executive reporting layer
-    validate_snowflake_data = SnowflakeOperator(
-        task_id='validate_serving_layer',
-        snowflake_conn_id='snowflake_default',
-        sql="""
-            -- Fail the task if any duplicates are detected in the Sales Fact
-            SELECT 1 / CASE WHEN COUNT(*) = 0 THEN 1 ELSE 0 END 
-            FROM (
-                SELECT transaction_id 
-                FROM retail_enterprise_db.analytics_gold.fact_sales 
-                GROUP BY transaction_id 
-                HAVING COUNT(*) > 1
-            );
-        """
-    )
+    validate_snowflake_data = SQLExecuteQueryOperator(
+    task_id='validate_serving_layer',
+    conn_id='snowflake_default',
+    sql="""
+        SELECT 1 / CASE WHEN COUNT(*) = 0 THEN 1 ELSE 0 END
+        FROM (
+            SELECT transaction_id
+            FROM retail_enterprise_db.analytics_gold.fact_sales
+            GROUP BY transaction_id
+            HAVING COUNT(*) > 1
+        );
+    """
+)
 
     # 3. Define the Pipeline Dependencies (The DAG Flow)
     ingest_to_bronze >> process_silver_layer >> process_gold_layer >> load_snowflake_serving >> validate_snowflake_data
