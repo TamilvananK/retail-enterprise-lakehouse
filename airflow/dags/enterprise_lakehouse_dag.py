@@ -45,7 +45,7 @@ with DAG(
     process_silver_layer = DatabricksRunNowOperator(
         task_id='dbt_silver_and_snapshots',
         databricks_conn_id='databricks_default',
-        job_id=10112  # Your specific Databricks Job ID
+        job_id=543914771448530  # Your specific Databricks Job ID
     )
 
     # ---------------------------------------------------------
@@ -55,7 +55,7 @@ with DAG(
     process_gold_layer = DatabricksRunNowOperator(
         task_id='dbt_gold_star_schema',
         databricks_conn_id='databricks_default',
-        job_id=10113
+        job_id=841065987563657
     )
 
     # ---------------------------------------------------------
