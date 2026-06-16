@@ -62,13 +62,10 @@ with DAG(
     # TASK 4: Load Curated Data into Snowflake Serving Layer
     # ---------------------------------------------------------
     # Triggers a stored procedure or COPY INTO command in Snowflake
-    load_snowflake_serving = SQLExecuteQueryOperator(
+    load_snowflake_serving = DatabricksRunNowOperator(
     task_id='load_gold_to_snowflake',
-    conn_id='snowflake_default',
-    sql="""
-        USE WAREHOUSE retail_loading_wh;
-        CALL retail_enterprise_db.public.sp_load_gold_tables();
-    """
+    databricks_conn_id='databricks_default',
+    job_id=324188902771662
 )
 
     # ---------------------------------------------------------
