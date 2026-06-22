@@ -7,6 +7,7 @@ It ingests highly fragmented, heterogeneous data (Sales, Inventory, Customers, P
 
 ## 🏗️ Architecture & Data Flow
 
+```mermaid
 graph TD
 
     %% External Sources
