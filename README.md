@@ -64,18 +64,33 @@ graph TD
     Airflow -.->|Triggers| ADF_PL
     Airflow -.->|Triggers processing| Databricks
 
-    🛠️ Tech Stack
+```
+
+
+🛠️ Tech Stack
 Cloud Infrastructure: Azure (ADLS Gen2)
 
 Ingestion: Azure Data Factory (Metadata-driven parameterized pipelines)
 
+<img width="1439" height="853" alt="Screen Shot 2026-06-22 at 6 17 18 PM" src="https://github.com/user-attachments/assets/65531617-cf0c-4eab-93ce-d4baf71fc314" />
+
+
+
 Processing & Compute: Azure Databricks (PySpark, Databricks Lakehouse Federation)
 
+<img width="1439" height="853" alt="Screen Shot 2026-06-22 at 6 16 58 PM" src="https://github.com/user-attachments/assets/049a80a3-8813-4a68-9256-d8d794ba4d37" />
+
 Data Transformation: dbt (Data Build Tool)
+
+<img width="1439" height="769" alt="Screen Shot 2026-06-22 at 6 44 18 PM" src="https://github.com/user-attachments/assets/df29f346-74d7-40ff-9bca-fdd22b45fb80" />
+
 
 Data Warehouse / Serving Layer: Snowflake (Role-Based Access Control, Secure Views)
 
 Orchestration: Apache Airflow
+
+<img width="1439" height="853" alt="Screen Shot 2026-06-22 at 6 14 57 PM" src="https://github.com/user-attachments/assets/2a786c5c-886a-417b-84c4-7a3bae1711eb" />
+
 
 Business Intelligence: Power BI
 
