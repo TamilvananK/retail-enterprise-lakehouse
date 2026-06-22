@@ -110,22 +110,46 @@ Bypassed intermediate external stages by utilizing Databricks Unity Catalog Fede
 5. Decoupled Orchestration
 Designed an idempotent Apache Airflow DAG to act purely as the control plane. Compute is strictly delegated to specialized engines: ADF handles IO/Ingestion, Databricks handles transformation, and Snowflake handles BI query concurrency.
 
-📁 Repository Structure
+## 📁 Repository Structure
 
-├── adf/                      # Data Factory pipeline JSON definitions
-├── airflow/                  # DAGs and task dependencies
-├── databricks/               # Lakehouse Federation load scripts & PySpark configs
+```text
+enterprise-retail-lakehouse/
+│
+├── adf/
+│   └── Azure Data Factory pipeline JSON definitions
+│
+├── airflow/
+│   └── DAGs, scheduling, and orchestration workflows
+│
+├── databricks/
+│   └── PySpark notebooks, Lakehouse Federation scripts,
+│       and cluster configurations
+│
 ├── dbt_retail_dev/
 │   ├── models/
-│   │   ├── silver/           # Cleansed, conformed models (Views/Tables)
-│   │   └── gold/             # Star schema dimensions and facts
-│   ├── snapshots/            # SCD Type 2 YAML configurations
-│   └── dbt_project.yml       # Custom schema generation macros
-├── snowflake/                # DDL for databases, schemas, RBAC, and Secure Views
+│   │   ├── silver/
+│   │   │   └── Cleansed and conformed business models
+│   │   │
+│   │   └── gold/
+│   │       └── Star schema facts and dimensions
+│   │
+│   ├── snapshots/
+│   │   └── SCD Type 2 configurations
+│   │
+│   └── dbt_project.yml
+│       └── dbt project configuration
+│
+├── snowflake/
+│   └── DDL scripts for databases, schemas,
+│       RBAC roles, and secure views
+│
 └── README.md
+    └── Project documentation
+```
 
-👨‍💻 Author
-Tamilvanan Kannappan
+## 👨‍💻 Author
+
+**Tamilvanan Kannappan**
 Data Engineer
 
 
