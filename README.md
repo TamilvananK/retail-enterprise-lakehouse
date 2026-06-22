@@ -7,26 +7,28 @@ It ingests highly fragmented, heterogeneous data (Sales, Inventory, Customers, P
 
 ## 🏗️ Architecture & Data Flow
 
-```mermaid
 graph TD
-    %% Define external sources
-    subgraph External Sources
+
+    %% External Sources
+    subgraph External_Sources
         API[JSON API]
         CSV[Daily CSV Exports]
         DB[Relational DB]
     end
 
-    %% Ingestion Layer
-    subgraph Azure Data Factory
+    %% Azure Data Factory
+    subgraph Azure_Data_Factory
         ADF_PL[Metadata-Driven Pipeline]
     end
 
     %% Databricks Lakehouse
-    subgraph Databricks Unity Catalog & dbt
+    subgraph Databricks_Lakehouse
+        DBX[Unity Catalog + dbt]
+
         Bronze[(Bronze Layer / Raw)]
         Silver[(Silver Layer / Conformed)]
         Gold[(Gold Layer / Business)]
-        
+
         Bronze -->|PySpark / dbt| Silver
         Silver -->|dbt Snapshots SCD2| Silver
         Silver -->|dbt Star Schema| Gold
@@ -37,30 +39,35 @@ graph TD
         Airflow((Apache Airflow))
     end
 
-    %% Serving Layer
-    subgraph Snowflake Data Warehouse
+    %% Snowflake
+    subgraph Snowflake_Data_Warehouse
         SF_Landing[silver_landing]
         SF_Analytics[analytics_gold]
         SF_Ops[operations_gold]
         SF_Views[Secure BI Views]
-        
+
         SF_Analytics --> SF_Views
         SF_Ops --> SF_Views
     end
 
-    %% BI Tool
-    subgraph Business Intelligence
+    %% BI
+    subgraph Business_Intelligence
         PBI[Power BI]
     end
 
-    %% Flow connections
-    External Sources -->|Ingest| ADF_PL
-    ADF_PL -->|Land| Bronze
-    Gold -->|Databricks Lakehouse Federation| SF_Analytics
-    Gold -->|Databricks Lakehouse Federation| SF_Ops
+    %% Data Flow
+    API --> ADF_PL
+    CSV --> ADF_PL
+    DB --> ADF_PL
+
+    ADF_PL --> Bronze
+
+    Gold --> SF_Analytics
+    Gold --> SF_Ops
+
     SF_Views --> PBI
 
-    %% Orchestration links
+    %% Orchestration
     Airflow -.->|Triggers| ADF_PL
-    Airflow -.->|Triggers dbt| Databricks Unity Catalog & dbt
-    Airflow -.->|Triggers Federation| Databricks Unity Catalog & dbt
+    Airflow -.->|Runs dbt Models| DBX
+    Airflow -.->|Controls Federation| DBX
