@@ -6,6 +6,7 @@ This project is an end-to-end, production-grade data engineering platform design
 It ingests highly fragmented, heterogeneous data (Sales, Inventory, Customers, Products) and processes it through a Medallion Architecture (Bronze, Silver, Gold) to deliver cross-domain analytics. The platform enables near real-time executive dashboarding, Customer 360 reporting, and supply chain health tracking to proactively identify inventory stockouts.
 
 ## 🏗️ Architecture & Data Flow
+<img width="1536" height="1024" alt="ChatGPT Image Jun 22, 2026, 06_54_37 PM" src="https://github.com/user-attachments/assets/5f39f481-4bcf-4437-a082-d6cdcad2356d" />
 
 ```mermaid
 graph TD
